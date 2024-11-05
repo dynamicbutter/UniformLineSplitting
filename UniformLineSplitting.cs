@@ -270,10 +270,4 @@ public class UniformLineSplitting
             }
         }
     }
-
-    struct StateData
-    {
-        public WordAndTagData.Types NextState;
-        public WordAndTagData Data;
-    }
 }

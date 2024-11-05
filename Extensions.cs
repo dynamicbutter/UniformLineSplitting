@@ -13,5 +13,4 @@ public static class Extensions {
     {
         return (float)Math.Sqrt(values.Average(v => Math.Pow(v - mean, 2)));
     }
-
 }
