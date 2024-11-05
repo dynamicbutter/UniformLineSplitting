@@ -223,7 +223,7 @@ public class UniformLineSplittingTests
             maxLines,
             UniformLineSplitting.Western);
         Debug.Log($"{layouts.Count} layouts");
-        UniformLineSplitting.SortLayouts(layouts, maxLineLength);
+        UniformLineSplitting.SortLayouts(layouts);
         foreach (var layout in layouts) {
             var text = "";
             foreach (var l in layout.LineLens) {
@@ -254,7 +254,7 @@ public class UniformLineSplittingTests
             maxLines,
             UniformLineSplitting.Western);
         Debug.Log($"{layouts.Count} layouts");
-        UniformLineSplitting.SortLayouts(layouts, maxLineLength);
+        UniformLineSplitting.SortLayouts(layouts);
         foreach (var layout in layouts) {
             var text = "";
             foreach (var l in layout.LineLens) {
@@ -285,7 +285,7 @@ public class UniformLineSplittingTests
             maxLines,
             UniformLineSplitting.Western);
         Debug.Log($"{layouts.Count} layouts");
-        UniformLineSplitting.SortLayouts(layouts, maxLineLength);
+        UniformLineSplitting.SortLayouts(layouts);
         foreach (var layout in layouts) {
             var text = "";
             foreach (var l in layout.LineLens) {
@@ -297,10 +297,12 @@ public class UniformLineSplittingTests
     }
 
     [Test]
-    public void CreateLayoutsTest_22_4()
+    public void CreateLayoutsTest_20_4()
     {
         var maxLineLength = 20;
         var maxLines = 4;
+        var options = UniformLineSplitting.Western;
+        options.SearchRadius = 12;
         List<UniformLineSplitting.LayoutState> layouts = new();
         var tmproText = "Practice sessions are up 17.6% today compared to the past week!";
         var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Western);
@@ -311,9 +313,9 @@ public class UniformLineSplittingTests
             wordAndTagData,
             maxLineLength,
             maxLines,
-            UniformLineSplitting.Western);
+            options);
         Debug.Log($"{layouts.Count} layouts");
-        UniformLineSplitting.SortLayouts(layouts, maxLineLength);
+        UniformLineSplitting.SortLayouts(layouts);
         foreach (var layout in layouts) {
             var text = "";
             foreach (var l in layout.LineLens) {
@@ -321,17 +323,19 @@ public class UniformLineSplittingTests
             }
             Debug.Log($"{text}: {layout.Result}");
         }
-        Assert.AreEqual(5, layouts.Count);
+        Assert.AreEqual(7, layouts.Count);
         Assert.AreEqual(
             "Practice sessions\nare up 17.6%\ntoday compared to\nthe past week!",
             layouts[0].Result);
     }
 
     [Test]
-    public void CreateLayoutsTest_22_4_Tags()
+    public void CreateLayoutsTest_20_4_Tags()
     {
         var maxLineLength = 20;
         var maxLines = 4;
+        var options = UniformLineSplitting.Western;
+        options.SearchRadius = 12;
         List<UniformLineSplitting.LayoutState> layouts = new();
         var tmproText = "<color=\"green\">Prac<b>t</b><b></b>ice <b></b><b></b><b></b>sessions <b></b><b></b><b></b>are up 17.6<b>%</b> today compared to<b></b><b></b> the past week!";
         var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Western);
@@ -342,9 +346,9 @@ public class UniformLineSplittingTests
             wordAndTagData,
             maxLineLength,
             maxLines,
-            UniformLineSplitting.Western);
+            options);
         Debug.Log($"{layouts.Count} layouts");
-        UniformLineSplitting.SortLayouts(layouts, maxLineLength);
+        UniformLineSplitting.SortLayouts(layouts);
         foreach (var layout in layouts) {
             var text = "";
             foreach (var l in layout.LineLens) {
@@ -352,7 +356,7 @@ public class UniformLineSplittingTests
             }
             Debug.Log($"{text}: {layout.Result}");
         }
-        Assert.AreEqual(5, layouts.Count);
+        Assert.AreEqual(7, layouts.Count);
         Assert.AreEqual(
             "<color=\"green\">Prac<b>t</b><b></b>ice <b></b><b></b><b></b>sessions\n" +
             "<b></b><b></b><b></b>are up 17.6<b>%</b>\n" +
@@ -370,5 +374,28 @@ public class UniformLineSplittingTests
         Assert.AreEqual(
             "<color=\"green\">Practice sessions are\nup 17.6% today compared\nto the past week!<this is a long tag full of words and spaces>",
             result);
+    }
+
+    [Test]
+    public void UnixFormatDocTest()
+    {
+        int maxLineLength = 75;
+        var input = @"This extra-long paragraph was writtin to demonstrate how the `fmt(1)` program handles longer inputs. When testing inputs, you don't want them  be too short, nor too long, because the quality of the program can only be determined upon inspection of complex content. The quick brown fox jumps over the lazy dog. Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the Government for a redress of grievances.";
+        int minLineCount = input.Length / maxLineLength == 0 ? 1 : input.Length / maxLineLength;
+        int maxLineCount = (int)(3.0 * input.Length / maxLineLength);
+        var result = UniformLineSplitting.Split(
+            input, maxLineLength, minLineCount, maxLineCount, UniformLineSplitting.Western);
+        Assert.AreEqual(
+@"This extra-long paragraph was writtin to demonstrate how the `fmt(1)`
+program handles longer inputs. When testing inputs, you don't want them
+be too short, nor too long, because the quality of the program can only be
+determined upon inspection of complex content. The quick brown fox jumps
+over the lazy dog. Congress shall make no law respecting an establishment
+of religion, or prohibiting the free exercise thereof; or abridging the
+freedom of speech, or of the press; or the right of the people peaceably
+to assemble, and to petition the Government for a redress of grievances.",
+            result);
+        // using (System.IO.StreamWriter outputFile = new System.IO.StreamWriter("/tmp/UnixFormatDocTest.txt")) {
+        //     outputFile.WriteLine(result);
     }
 }

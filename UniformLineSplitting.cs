@@ -10,7 +10,7 @@ public class UniformLineSplitting
         public char TagStart;
         public char TagEnd;
         public char Escape;
-        public float SearchRadius;
+        public int SearchRadius;
     }
 
     public static Options Western = new() {
@@ -20,7 +20,7 @@ public class UniformLineSplitting
         TagStart = '<',
         TagEnd = '>',
         Escape = '\\',
-        SearchRadius = .5f
+        SearchRadius = 5
     };
 
     public struct WordAndTagData
@@ -98,7 +98,7 @@ public class UniformLineSplitting
                     i,
                     options);
                 if (accumulator.Count > 0) {
-                    SortLayouts(accumulator, maxLineLength);
+                    SortLayouts(accumulator);
                     return accumulator[0].Result;
                 }
             }
@@ -107,7 +107,7 @@ public class UniformLineSplitting
     }
 
     // Sort by the layout that produces the most uniform length
-    public static void SortLayouts(List<LayoutState> layoutStates, int desiredLineLength)
+    public static void SortLayouts(List<LayoutState> layoutStates)
     {
         layoutStates.Sort(
             (a, b) => {
@@ -136,7 +136,7 @@ public class UniformLineSplitting
         int maxLineCount,
         Options options)
     {
-        int minLineLength = (int)(options.SearchRadius * maxLineLength);
+        int minLineLength = maxLineLength - options.SearchRadius;
         if (layoutState.Index < wordAndTagData.Count) {
             var d = wordAndTagData[layoutState.Index++];
             if (d.Type == WordAndTagData.Types.Tag) {
