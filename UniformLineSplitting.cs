@@ -6,11 +6,11 @@ public class UniformLineSplitting
     {
         public string WordSep;      // Word seperator inserted into the result
         public string LineSep;      // Line seperator inserted into the result
-        public string Seperators;   // List of word seperators used by serach
+        public string Seperators;   // List of word seperators used by search
         public char TagStart;
         public char TagEnd;
         public char Escape;
-        public int SearchRadius;
+        public int SearchRadius;    // How many characters from maxLineLength to search
     }
 
     public static Options Western = new() {
@@ -44,26 +44,7 @@ public class UniformLineSplitting
         public string Result;
         public int Index;
         public bool Aborted;
-    }
-
-    // Return positions and lengths of tags, words, and seperators
-    public static List<WordAndTagData> GetWordAndTagData(string input, Options options)
-    {
-        List<WordAndTagData> results = new()
-        {
-            { new() { Type = WordAndTagData.Types.None } }
-        };
-        int pos = 0;
-        foreach (var c in input) {
-            ProcessChar(results, c, pos, options);
-            pos++;
-        }
-        for (var i=results.Count-1; i>=0; i--) {
-            if (results[i].Type == WordAndTagData.Types.None) {
-                results.RemoveAt(i);
-            }
-        }
-        return results;
+        public double SortMetric;
     }
 
     // Search for the most uniform way to split the lines at the seperators.
@@ -98,31 +79,11 @@ public class UniformLineSplitting
                     i,
                     options);
                 if (accumulator.Count > 0) {
-                    SortLayouts(accumulator);
-                    return accumulator[0].Result;
+                    return GetMostUniformLayout(accumulator).Result;
                 }
             }
         }
         return "";
-    }
-
-    // Sort by the layout that produces the most uniform length
-    public static void SortLayouts(List<LayoutState> layoutStates)
-    {
-        layoutStates.Sort(
-            (a, b) => {
-                var metricA = a.LineLens.StdDev(a.LineLens.Mean());
-                var metricB = b.LineLens.StdDev(b.LineLens.Mean());
-                if (metricA == metricB) {
-                    return 0;
-                }
-                else if (metricA < metricB) {
-                    return -1;
-                }
-                else {
-                    return 1;
-                }
-            });
     }
 
     // Recursively create layouts bifurcating at the seperators from SearchRadius
@@ -193,6 +154,69 @@ public class UniformLineSplitting
                     accumulator.Add(layoutState);
                 }
             }
+        }
+    }
+
+    // Return positions and lengths of tags, words, and seperators
+    public static List<WordAndTagData> GetWordAndTagData(string input, Options options)
+    {
+        List<WordAndTagData> results = new()
+        {
+            { new() { Type = WordAndTagData.Types.None } }
+        };
+        int pos = 0;
+        foreach (var c in input) {
+            ProcessChar(results, c, pos, options);
+            pos++;
+        }
+        for (var i = results.Count - 1; i >= 0; i--) {
+            if (results[i].Type == WordAndTagData.Types.None) {
+                results.RemoveAt(i);
+            }
+        }
+        return results;
+    }
+
+    // Sort by layout uniformity
+    public static void SortByUniformity(List<LayoutState> layoutStates)
+    {
+        StdDev(layoutStates);
+        layoutStates.Sort(
+            (a, b) => {
+                if (a.SortMetric == b.SortMetric) {
+                    return 0;
+                }
+                else if (a.SortMetric < b.SortMetric) {
+                    return -1;
+                }
+                else {
+                    return 1;
+                }
+            });
+    }
+
+    // Return the most uniform layout
+    public static LayoutState GetMostUniformLayout(List<LayoutState> layoutStates)
+    {
+        var minIndex = 0;
+        var minDev = double.MaxValue;
+        for (var i = 0; i < layoutStates.Count; i++) {
+            var stdDev = StdDev(layoutStates[i]);
+            if (stdDev < minDev) {
+                minDev = stdDev;
+                minIndex = i;
+            }
+        }
+        return layoutStates[minIndex];
+    }
+
+    // Compute stddev of each item for sorting
+    static void StdDev(List<LayoutState> layoutStates)
+    {
+        for (var i = 0; i < layoutStates.Count; i++) {
+            var ls = layoutStates[i];
+            ls.SortMetric = StdDev(ls);
+            layoutStates[i] = ls;
         }
     }
 
@@ -269,5 +293,10 @@ public class UniformLineSplitting
                     });
             }
         }
+    }
+
+    static double StdDev(LayoutState layoutState)
+    {
+        return layoutState.LineLens.StdDev(layoutState.LineLens.Mean());
     }
 }
