@@ -31,7 +31,7 @@ var input = @"This extra-long paragraph was writtin to demonstrate how the `fmt(
 int minLineCount = input.Length / maxLineLength;
 int maxLineCount = 2 * minLineCount;
 var result = UniformLineSplitting.Split(
-    input, maxLineLength, minLineCount, maxLineCount, UniformLineSplitting.Western);
+    input, maxLineLength, minLineCount, maxLineCount, UniformLineSplitting.Defaults);
 ```
 
 ## Result

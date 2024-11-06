@@ -13,7 +13,7 @@ public class UniformLineSplitting
         public int SearchRadius;    // How many characters from maxLineLength to search
     }
 
-    public static Options Western = new() {
+    public static Options Defaults = new() {
         WordSep = " ",
         LineSep = "\n",
         Seperators = " \r\n\t",

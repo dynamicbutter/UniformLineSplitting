@@ -7,7 +7,7 @@ public class UniformLineSplittingTests
     [Test]
     public void EmptyWordAndTagDataTest()
     {
-        var d = UniformLineSplitting.GetWordAndTagData("", UniformLineSplitting.Western);
+        var d = UniformLineSplitting.GetWordAndTagData("", UniformLineSplitting.Defaults);
         Assert.AreEqual(0, d.Count);
     }
 
@@ -16,7 +16,7 @@ public class UniformLineSplittingTests
     {
         var d = UniformLineSplitting.GetWordAndTagData(
             "<color=\"red\">You <size=50%>ranked</size> in the top <b>99.9%</b>!",
-            UniformLineSplitting.Western);
+            UniformLineSplitting.Defaults);
         Assert.AreEqual(17, d.Count);
         var i = 0;
         Assert.AreEqual(UniformLineSplitting.WordAndTagData.Types.Tag, d[i].Type);
@@ -74,7 +74,7 @@ public class UniformLineSplittingTests
     {
         var d = UniformLineSplitting.GetWordAndTagData(
             "<color=\"red\">You <size=50%>ranked</size> in the top <b>99.9%</b>!  mucker",
-            UniformLineSplitting.Western);
+            UniformLineSplitting.Defaults);
         Assert.AreEqual(19, d.Count);
         var i = 0;
         Assert.AreEqual(UniformLineSplitting.WordAndTagData.Types.Tag, d[i].Type);
@@ -141,7 +141,7 @@ public class UniformLineSplittingTests
     {
         var d = UniformLineSplitting.GetWordAndTagData(
             "<color=\"red\">You <size=50%>ranked</size> in the top <b>99.9%</b>! mucker ",
-            UniformLineSplitting.Western);
+            UniformLineSplitting.Defaults);
         Assert.AreEqual(20, d.Count);
         var i = 0;
         Assert.AreEqual(UniformLineSplitting.WordAndTagData.Types.Tag, d[i].Type);
@@ -213,7 +213,7 @@ public class UniformLineSplittingTests
         var maxLines = 3;
         List<UniformLineSplitting.LayoutState> layouts = new();
         var tmproText = "Practice sessions are up 17.6% today compared to the past week!";
-        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Western);
+        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Defaults);
         UniformLineSplitting.CreateLayouts(
             tmproText,
             new() { LineLens = new() },
@@ -221,7 +221,7 @@ public class UniformLineSplittingTests
             wordAndTagData,
             maxLineLength,
             maxLines,
-            UniformLineSplitting.Western);
+            UniformLineSplitting.Defaults);
         Debug.Log($"{layouts.Count} layouts");
         UniformLineSplitting.SortByUniformity(layouts);
         foreach (var layout in layouts) {
@@ -244,7 +244,7 @@ public class UniformLineSplittingTests
         var maxLines = 3;
         List<UniformLineSplitting.LayoutState> layouts = new();
         var tmproText = "Practice sessions are up 17.6% today compared to the past week!";
-        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Western);
+        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Defaults);
         UniformLineSplitting.CreateLayouts(
             tmproText,
             new() { LineLens = new() },
@@ -252,7 +252,7 @@ public class UniformLineSplittingTests
             wordAndTagData,
             maxLineLength,
             maxLines,
-            UniformLineSplitting.Western);
+            UniformLineSplitting.Defaults);
         Debug.Log($"{layouts.Count} layouts");
         UniformLineSplitting.SortByUniformity(layouts);
         foreach (var layout in layouts) {
@@ -275,7 +275,7 @@ public class UniformLineSplittingTests
         var maxLines = 3;
         List<UniformLineSplitting.LayoutState> layouts = new();
         var tmproText = "Practice sessions are up 17.6% today compared to the past week!";
-        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Western);
+        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Defaults);
         UniformLineSplitting.CreateLayouts(
             tmproText,
             new() { LineLens = new() },
@@ -283,7 +283,7 @@ public class UniformLineSplittingTests
             wordAndTagData,
             maxLineLength,
             maxLines,
-            UniformLineSplitting.Western);
+            UniformLineSplitting.Defaults);
         Debug.Log($"{layouts.Count} layouts");
         UniformLineSplitting.SortByUniformity(layouts);
         foreach (var layout in layouts) {
@@ -301,11 +301,11 @@ public class UniformLineSplittingTests
     {
         var maxLineLength = 20;
         var maxLines = 4;
-        var options = UniformLineSplitting.Western;
+        var options = UniformLineSplitting.Defaults;
         options.SearchRadius = 12;
         List<UniformLineSplitting.LayoutState> layouts = new();
         var tmproText = "Practice sessions are up 17.6% today compared to the past week!";
-        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Western);
+        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Defaults);
         UniformLineSplitting.CreateLayouts(
             tmproText,
             new() { LineLens = new() },
@@ -334,11 +334,11 @@ public class UniformLineSplittingTests
     {
         var maxLineLength = 20;
         var maxLines = 4;
-        var options = UniformLineSplitting.Western;
+        var options = UniformLineSplitting.Defaults;
         options.SearchRadius = 12;
         List<UniformLineSplitting.LayoutState> layouts = new();
         var tmproText = "<color=\"green\">Prac<b>t</b><b></b>ice <b></b><b></b><b></b>sessions <b></b><b></b><b></b>are up 17.6<b>%</b> today compared to<b></b><b></b> the past week!";
-        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Western);
+        var wordAndTagData = UniformLineSplitting.GetWordAndTagData(tmproText, UniformLineSplitting.Defaults);
         UniformLineSplitting.CreateLayouts(
             tmproText,
             new() { LineLens = new() },
@@ -370,7 +370,7 @@ public class UniformLineSplittingTests
     {
         var result = UniformLineSplitting.Split(
             "<color=\"green\">Practice sessions are up 17.6% today compared to the past week!<this is a long tag full of words and spaces>",
-            25, 1, 3, UniformLineSplitting.Western);
+            25, 1, 3, UniformLineSplitting.Defaults);
         Assert.AreEqual(
             "<color=\"green\">Practice sessions are\nup 17.6% today compared\nto the past week!<this is a long tag full of words and spaces>",
             result);
@@ -381,10 +381,10 @@ public class UniformLineSplittingTests
     {
         int maxLineLength = 75;
         var input = @"This extra-long paragraph was writtin to demonstrate how the `fmt(1)` program handles longer inputs. When testing inputs, you don't want them  be too short, nor too long, because the quality of the program can only be determined upon inspection of complex content. The quick brown fox jumps over the lazy dog. Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the Government for a redress of grievances.";
-        int minLineCount = input.Length / maxLineLength == 0 ? 1 : input.Length / maxLineLength;
+        int minLineCount = input.Length / maxLineLength;
         int maxLineCount = 2 * minLineCount;
         var result = UniformLineSplitting.Split(
-            input, maxLineLength, minLineCount, maxLineCount, UniformLineSplitting.Western);
+            input, maxLineLength, minLineCount, maxLineCount, UniformLineSplitting.Defaults);
         Assert.AreEqual(
 @"This extra-long paragraph was writtin to demonstrate how the `fmt(1)`
 program handles longer inputs. When testing inputs, you don't want them
