@@ -1,5 +1,5 @@
 # UniformLineSplitting
-Find the most uniform way to split lines at word boundaries, ignoring tags, with various constraints.
+Find the most uniform way to split lines at word boundaries, ignoring markup tags, with various constraints.
 
 ## Syntax
 ```csharp
