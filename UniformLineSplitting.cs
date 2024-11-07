@@ -4,24 +4,36 @@ public class UniformLineSplitting
 {
     public struct Options
     {
-        public string WordSep;      // Word seperator inserted into the result
-        public string LineSep;      // Line seperator inserted into the result
-        public string Seperators;   // List of word seperators used by search
-        public char TagStart;
-        public char TagEnd;
-        public char Escape;
-        public int SearchRadius;    // How many characters from maxLineLength to search
+        public string WordSep;          // Word seperator inserted into the result
+        public string LineSep;          // Line seperator inserted into the result
+        public string Seperators;       // List of word seperators used by search
+        public int SearchRadius;        // How many characters from maxLineLength to search
+        public List<TagDef> TagDefs;    // Invisible markup tag definitions (if any)
     }
 
-    public static Options Defaults = new() {
+    public struct TagDef
+    {
+        public char Start;
+        public char End;
+        public char Escape;
+    }
+
+    public static Options HtmlText = new() {
         WordSep = " ",
         LineSep = "\n",
         Seperators = " \r\n\t",
-        TagStart = '<',
-        TagEnd = '>',
-        Escape = '\\',
-        SearchRadius = 5
+        TagDefs = new() { new() { Start = '<', End = '>', Escape = '\\' } },
+        SearchRadius = 10
     };
+
+    public static Options PlainText = new() {
+        WordSep = " ",
+        LineSep = "\n",
+        Seperators = " \r\n\t",
+        SearchRadius = 10
+    };
+
+    public static Options Defaults = PlainText;
 
     public struct WordAndTagData
     {
@@ -236,7 +248,7 @@ public class UniformLineSplitting
         List<WordAndTagData> wordAndTagData, WordAndTagData.Types state, char c, Options options)
     {
         if (state == WordAndTagData.Types.Tag) {
-            if (c == options.TagEnd) {
+            if (c == options.TagDefs[0].End) {
                 return GetPriorType(wordAndTagData);
             }
             else {
@@ -244,7 +256,7 @@ public class UniformLineSplitting
             }
         }
         else {
-            if (c == options.TagStart) {
+            if (options.TagDefs != null && c == options.TagDefs[0].Start) {
                 return WordAndTagData.Types.Tag;
             }
             else if (options.Seperators.Contains(c)) {
@@ -272,7 +284,7 @@ public class UniformLineSplitting
         else if (data.Type == WordAndTagData.Types.Tag) {
             data.Len++;
             wordAndTagData[^1] = data;
-            if (c == options.TagEnd) {
+            if (c == options.TagDefs[0].End) {
                 wordAndTagData.Add(
                     new() {
                         Type = WordAndTagData.Types.None,
