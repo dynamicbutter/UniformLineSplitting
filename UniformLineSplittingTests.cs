@@ -383,7 +383,7 @@ public class UniformLineSplittingTests
         var result = UniformLineSplitting.Split(
             input, 40, 1, 4, UniformLineSplitting.PlainText);
         Assert.AreEqual(
-            "<color=\"green\">Practice sessions are\nup 17.6% today compared to the past\nweek!<this is a long tag full of words\nand spaces>",
+            "<color=\"green\">Practice sessions\nare up 17.6% today compared to\nthe past week!<this is a long\ntag full of words and spaces>",
             result);
     }
 
