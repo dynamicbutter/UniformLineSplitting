@@ -110,7 +110,7 @@ public class UniformLineSplitting
         Options options)
     {
         int minLineLength = maxLineLength - options.SearchRadius;
-        if (layoutState.Index < wordAndTagData.Count) {
+        if (layoutState.Aborted == false && layoutState.Index < wordAndTagData.Count) {
             var d = wordAndTagData[layoutState.Index++];
             if (d.Type == WordAndTagData.Types.Tag) {
                 layoutState.Result += input.Substring(d.Pos, d.Len);
